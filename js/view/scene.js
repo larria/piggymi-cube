@@ -240,7 +240,9 @@ export class RubikScene {
       for (const cl of layer) pivot.attach(cl);
 
       const startTime = performance.now();
+      let finished = false;
       const animate = () => {
+        if (finished) return;
         const t = Math.min((performance.now() - startTime) / duration, 1);
         const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;  // easeInOutQuad
         const angle = totalAngle * ease;
@@ -248,6 +250,7 @@ export class RubikScene {
         if (t < 1) {
           requestAnimationFrame(animate);
         } else {
+          finished = true;
           // 归位：把 cubelets 从 pivot 移回 cubeGroup，位置取整
           pivot.updateMatrixWorld();
           for (const cl of layer) this.cubeGroup.attach(cl);
@@ -267,6 +270,13 @@ export class RubikScene {
         }
       };
       requestAnimationFrame(animate);
+      // rAF 后台节流兜底：若页面隐藏导致 rAF 停摆，用 setTimeout 强制完成动画
+      setTimeout(() => {
+        if (!finished) {
+          pivot.setRotationFromAxisAngle(new THREE.Vector3(...axis), totalAngle);
+          animate();   // finished 置位 + 归位 + resolve
+        }
+      }, duration + 300);
     });
   }
 
