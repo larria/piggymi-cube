@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>CFOP 魔方教学系统</title>
+<meta name="description" content="三阶魔方 CFOP 教学：3D 交互、智能求解、公式步进演示">
+<meta name="theme-color" content="#14161c">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CFOP魔方">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <!-- 顶部栏 -->
+  <header id="topbar">
+    <h1>CFOP 魔方教学系统</h1>
+    <div id="phase-badge">阶段：—</div>
+    <div id="stats">
+      <span id="step-count">步数：0</span>
+      <span id="timer">00:00.0</span>
+    </div>
+  </header>
+
+  <!-- 主区域 -->
+  <main id="main">
+    <aside id="panel-left">
+      <div class="panel-block">
+        <h2>魔方操作</h2>
+        <p class="hint">拖拽空白处旋转视角 · 拖拽魔方表面转动层 · 键盘输入公式</p>
+        <div class="btn-row">
+          <button id="btn-reset">重置魔方</button>
+          <button id="btn-scramble">打乱</button>
+          <button id="btn-undo">撤销</button>
+        </div>
+      </div>
+      <div class="panel-block">
+        <h2>CFOP 智能提示</h2>
+        <div id="cfop-status" class="cfop-status">
+          <span id="phase-icon">🎯</span>
+          <span id="phase-text">就绪。打乱后点击「下一步提示」</span>
+        </div>
+        <div class="btn-row">
+          <button id="btn-hint" class="primary">下一步提示</button>
+          <button id="btn-auto" class="primary">自动演示</button>
+          <button id="btn-stop-auto">停止演示</button>
+        </div>
+        <div id="hint-detail" class="hint-detail"></div>
+      </div>
+      <div class="panel-block">
+        <h2>公式输入（标准指令）</h2>
+        <input id="cmd-input" type="text" placeholder="例如 R U R' U' F2 …" autocomplete="off" spellcheck="false">
+        <button id="btn-run" class="primary">执行</button>
+        <p class="hint">U D L R F B，后缀 ' / 2</p>
+      </div>
+      <div class="panel-block">
+        <h2>阶段教学说明</h2>
+        <div id="tutorial" class="tutorial"></div>
+      </div>
+    </aside>
+
+    <section id="canvas-wrap">
+      <canvas id="canvas"></canvas>
+      <div id="stage-banner" class="stage-banner hidden"></div>
+      <div id="formula-overlay" class="formula-overlay hidden">
+        <div id="formula-text"></div>
+      </div>
+      <!-- 移动端操作面板 -->
+      <div id="mobile-pad" class="mobile-pad">
+        <button data-move="U">U</button><button data-move="U'">U'</button><button data-move="U2">U2</button>
+        <button data-move="D">D</button><button data-move="D'">D'</button><button data-move="D2">D2</button>
+        <button data-move="L">L</L><button data-move="L'">L'</button><button data-move="L2">L2</button>
+        <button data-move="R">R</button><button data-move="R'">R'</button><button data-move="R2">R2</button>
+        <button data-move="F">F</button><button data-move="F'">F'</button><button data-move="F2">F2</button>
+        <button data-move="B">B</button><button data-move="B'">B'</button><button data-move="B2">B2</button>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footbar">
+    <span>White cross 在下 · Yellow 在上 · F=蓝(前) R=红(右)</span>
+    <span id="history"></span>
+  </footer>
+</div>
+
+<script type="module" src="js/main.js"></script>
+<script>
+// PWA Service Worker 注册
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => {
+      console.warn('SW 注册失败（不影响功能）:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
